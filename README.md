@@ -22,15 +22,21 @@ Khi có thiết bị kết nối hoặc rời khỏi AP, LED sẽ thay đổi tr
 - Về việc cài đặt Rust và môi trường thì bạn hãy đọc trong cuốn sánh này [The Rust on ESP Book](https://docs.espressif.com/projects/rust/book/)
 - Bắt đầy bằng việc Generating Projects from Templates ở đây tôi dùng std nên:
  - Cài đặt cargo generate:
+
     cargo install cargo-generate
+
  - Tải template:
+
      cargo generate esp-rs/esp-idf-template cargo
+
 Lưu ý: Khi thực hiện thì máy sẽ hỏi tên project bạn nhập tên mình muốn vào, sau đó là lựa chọn board phù hợp, cuối cùng là cài đặt cá nhân nếu mà bạn muốn để mặc định thì chọn false ở đây tôi để mặc định nên chọn false.
 - Tiếp theo chúng ta sẽ chọn những thư viện sẽ dùng và bỏ vào file Cargo.toml ở đây tôi dùng:
+
     esp-idf-hal = "0.45"
     esp-idf-sys = "0.36"
     anyhow = "1"
     heapless = "0.8"
+
 chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra các thư viện cẩn thận.
 - Bước tiếp bạn thưc hiện code trong main.rs chú ý các giá trị:
 
@@ -39,7 +45,8 @@ chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra cá
 |ssid    |SSID of your WiFi access point|
 |password|Your WiFi password            |
 
-- Cuối cùng chúng ta thực hiện build và flash xuống esp32c3 bằng lệnh:
+- Cuối cùng chúng ta thực hiện build và flash xuống esp32c3 bằng lệnh
+
     cargo run --release
 
 ## Thực hiện kết nối thực tiễn
