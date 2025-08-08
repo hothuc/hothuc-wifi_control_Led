@@ -40,5 +40,5 @@ chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra cá
     cargo run --release
 
 ## Thực hiện kết nối thực tiễn
-- Bạn sử dụng thiết bị là điện thoại hay máy tính kết nối wifi với esp32c3 ở đây tôi đặt tên wifi là **ESP32** và mật khẩu là **12345678** (lưu ý khi đặt mật khẩu bạn phải có 8 kí tự)
-- Vào trình duyệt web truy cập vào [192.168.71.1]()
+- Bạn sử dụng thiết bị là điện thoại hay máy tính kết nối wifi với esp32c3 ở đây tôi đặt tên wifi là **ESP32_AP** và mật khẩu là **12345678** (lưu ý khi đặt mật khẩu bạn phải có 8 kí tự)
+- Vào trình duyệt web truy cập vào hiện tại là đang IP động được ESP thông báo
