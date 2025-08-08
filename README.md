@@ -27,15 +27,15 @@ Khi có thiết bị kết nối hoặc rời khỏi AP, LED sẽ thay đổi tr
 
  - Tải template:
 
-    cargo generate esp-rs/esp-idf-template cargo
+                cargo generate esp-rs/esp-idf-template cargo
 
 Lưu ý: Khi thực hiện thì máy sẽ hỏi tên project bạn nhập tên mình muốn vào, sau đó là lựa chọn board phù hợp, cuối cùng là cài đặt cá nhân nếu mà bạn muốn để mặc định thì chọn false ở đây tôi để mặc định nên chọn false.
 - Tiếp theo chúng ta sẽ chọn những thư viện sẽ dùng và bỏ vào file Cargo.toml ở đây tôi dùng:
 
-    esp-idf-hal = "0.45"
-    esp-idf-sys = "0.36"
-    anyhow = "1"
-    heapless = "0.8"
+                esp-idf-hal = "0.45"
+                esp-idf-sys = "0.36"
+                anyhow = "1"
+                heapless = "0.8"
 
 chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra các thư viện cẩn thận.
 - Bước tiếp bạn thưc hiện code trong main.rs chú ý các giá trị:
@@ -47,7 +47,7 @@ chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra cá
 
 - Cuối cùng chúng ta thực hiện build và flash xuống esp32c3 bằng lệnh
 
-    cargo run --release
+                cargo run --release
 
 ## Thực hiện kết nối thực tiễn
 - Bạn sử dụng thiết bị là điện thoại hay máy tính kết nối wifi với esp32c3 ở đây tôi đặt tên wifi là **ESP32_AP** và mật khẩu là **12345678** (lưu ý khi đặt mật khẩu bạn phải có 8 kí tự)
