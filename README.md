@@ -33,10 +33,12 @@ Lưu ý: Khi thực hiện thì máy sẽ hỏi tên project bạn nhập tên m
     heapless = "0.8"
 chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra các thư viện cẩn thận.
 - Bước tiếp bạn thưc hiện code trong main.rs chú ý các giá trị:
+
 |  Name  |           Value              |
 |:-------|:-----------------------------|
 |ssid    |SSID of your WiFi access point|
 |password|Your WiFi password            |
+
 - Cuối cùng chúng ta thực hiện build và flash xuống esp32c3 bằng lệnh:
     cargo run --release
 
