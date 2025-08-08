@@ -32,7 +32,7 @@ Khi có thiết bị kết nối hoặc rời khỏi AP, LED sẽ thay đổi tr
 Lưu ý: Khi thực hiện thì máy sẽ hỏi tên project bạn nhập tên mình muốn vào, sau đó là lựa chọn board phù hợp, cuối cùng là cài đặt cá nhân nếu mà bạn muốn để mặc định thì chọn false ở đây tôi để mặc định nên chọn false.
 - Tiếp theo chúng ta sẽ chọn những thư viện sẽ dùng và bỏ vào file Cargo.toml ở đây tôi dùng:
 
-                esp-idf-hal = "0.45"
+                    esp-idf-hal = "0.45"
                 esp-idf-sys = "0.36"
                 anyhow = "1"
                 heapless = "0.8"
