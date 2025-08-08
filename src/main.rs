@@ -1,3 +1,6 @@
+use anyhow::Result;
+use std::sync::{Arc, Mutex};
+
 use esp_idf_sys as _; // Link to ESP-IDF
 use esp_idf_hal::gpio::*;
 use esp_idf_hal::peripherals::Peripherals;
@@ -7,13 +10,12 @@ use esp_idf_hal::io::Write;
 use heapless::String as HString;
 use esp_idf_hal::io::EspIOError;
 
-
 fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
 
     let peripherals = Peripherals::take()?;
-    use std::sync::{Arc, Mutex};
     let led = Arc::new(Mutex::new(PinDriver::output(peripherals.pins.gpio12)?));
+    let led_state = Arc::new(Mutex::new(false));
 
     // Tạo AP Wi-Fi
     let sysloop = esp_idf_svc::eventloop::EspSystemEventLoop::take()?;
@@ -29,38 +31,97 @@ fn main() -> anyhow::Result<()> {
     println!("AP mode started. SSID: ESP32_AP, Password: 12345678");
 
     // Web server điều khiển LED
-    use esp_idf_sys::EspError; // thêm dòng này
 
     let mut server = EspHttpServer::new(&HttpServerConfiguration::default())?;
+    let state_for_index = led_state.clone();
+    server.fn_handler("/", Method::Get, move |req| -> Result<(), EspIOError> {
+        let state = *state_for_index.lock().unwrap();
+        let status_text = if state { "ON" } else { "OFF" };
 
-    server.fn_handler("/", Method::Get, |req| -> Result<(), EspIOError> {
-        let html = r#"
-            <html>
-                <body>
-                    <h1>ESP32 LED Control</h1>
-                    <a href="/led/on">Turn ON</a>
-                    <a href="/led/off">Turn OFF</a>
-                </body>
-            </html>
-        "#;
-        req.into_ok_response()?.write_all(html.as_bytes())?;
+        // Very small, simple single page app using fetch() so page never fully reloads
+        let html = format!(
+r#"<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>ESP32 LED Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body {{ font-family: Arial, sans-serif; text-align:center; padding:1rem; }}
+    button {{ padding: 0.6rem 1.2rem; font-size:1rem; margin:0.5rem; }}
+    #status {{ margin-top:1rem; font-weight:bold; }}
+  </style>
+</head>
+<body>
+  <h1>ESP32 LED Control</h1>
+  <div>
+    <button onclick="ledOn()">Turn ON</button>
+    <button onclick="ledOff()">Turn OFF</button>
+  </div>
+  <p id="status">LED status: {}</p>
+
+  <script>
+    async function ledOn() {{
+      try {{
+        const r = await fetch('/on', {{ method: 'GET' }});
+        const t = await r.text();
+        document.getElementById('status').textContent = 'LED status: ' + t;
+      }} catch(e) {{ console.error(e); }}
+    }}
+    async function ledOff() {{
+      try {{
+        const r = await fetch('/off', {{ method: 'GET' }});
+        const t = await r.text();
+        document.getElementById('status').textContent = 'LED status: ' + t;
+      }} catch(e) {{ console.error(e); }}
+    }}
+    // Optionally: poll status every 5s (comment out if not wanted)
+    // setInterval(async () => {{
+    //   const r = await fetch('/status'); const t = await r.text();
+    //   document.getElementById('status').textContent = 'LED status: ' + t;
+    // }}, 5000);
+  </script>
+</body>
+</html>"#, status_text);
+
+        let mut resp = req.into_ok_response()?;
+        resp.write(html.as_bytes())?;
         Ok(())
     })?;
 
+    // Handler: turn LED on -> return "ON"
     let led_on = led.clone();
-    server.fn_handler("/led/on", Method::Get, move |req| -> Result<(), EspIOError> {
-        let mut led = led_on.lock().unwrap();
-        led.set_high()?;
-        req.into_ok_response()?.write(b"LED ON")?;
+    let state_on = led_state.clone();
+    server.fn_handler("/on", Method::Get, move |req| -> Result<(), EspIOError> {
+        // try to set pin high; if it errors we log but still return something
+        if let Err(e) = led_on.lock().unwrap().set_high() {
+            println!("GPIO set_high error: {:?}", e);
+        } else {
+            *state_on.lock().unwrap() = true;
+        }
+        let mut resp = req.into_ok_response()?;
+        resp.write(b"ON")?;
         Ok(())
     })?;
 
+    // Handler: turn LED off -> return "OFF"
     let led_off = led.clone();
-    server.fn_handler("/led/off", Method::Get, move |req| -> Result<(), EspIOError> {
-        let mut led = led_off.lock().unwrap();
-        led.set_low()?;
-        req.into_ok_response()?.write(b"LED OFF")?;
+    let state_off = led_state.clone();
+    server.fn_handler("/off", Method::Get, move |req| -> Result<(), EspIOError> {
+        if let Err(e) = led_off.lock().unwrap().set_low() {
+            println!("GPIO set_low error: {:?}", e);
+        } else {
+            *state_off.lock().unwrap() = false;
+        }
+        let mut resp = req.into_ok_response()?;
+        resp.write(b"OFF")?;
         Ok(())
+    })?;
+
+    // Small favicon handler to avoid 404 noise from browsers
+    server.fn_handler("/favicon.ico", Method::Get, |req| {
+        req.into_ok_response()?.write_all(b"")?;
+        Ok::<(), anyhow::Error>(())
     })?;
 
     loop {
