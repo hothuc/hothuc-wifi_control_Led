@@ -23,7 +23,7 @@ Khi có thiết bị kết nối hoặc rời khỏi AP, LED sẽ thay đổi tr
 - Bắt đầy bằng việc Generating Projects from Templates ở đây tôi dùng std nên:
  - Cài đặt cargo generate:
 
-    cargo install cargo-generate
+                cargo install cargo-generate
 
  - Tải template:
 
