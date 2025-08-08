@@ -4,25 +4,44 @@ use std::sync::{Arc, Mutex};
 use esp_idf_sys as _; // Link to ESP-IDF
 use esp_idf_hal::gpio::*;
 use esp_idf_hal::peripherals::Peripherals;
-use esp_idf_svc::wifi::{EspWifi, AccessPointConfiguration, Configuration};
+use esp_idf_svc::wifi::{EspWifi, AccessPointConfiguration, Configuration, WifiEvent, AuthMethod};
 use esp_idf_svc::http::server::{EspHttpServer, Configuration as HttpServerConfiguration, Method};
 use esp_idf_hal::io::Write;
 use heapless::String as HString;
 use esp_idf_hal::io::EspIOError;
+use esp_idf_svc::eventloop::EspSystemEventLoop;
 
 fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
 
     let peripherals = Peripherals::take()?;
     let led = Arc::new(Mutex::new(PinDriver::output(peripherals.pins.gpio12)?));
-    let led_state = Arc::new(Mutex::new(false));
+    let led_state = Arc::new(Mutex::new(true));
+     let sysloop = EspSystemEventLoop::take()?;
+
+    let led_event = led.clone();
+    // Đăng ký sự kiện Wi-Fi
+    let _sub = sysloop.subscribe::<WifiEvent, _>(move|event| {
+        match event {
+            WifiEvent::ApStaConnected(_info) => {
+                println!("Kết nối mới!");
+               let _ = led_event.lock().unwrap().set_high();
+            }
+            WifiEvent::ApStaDisconnected(_info) => {
+                println!("Thiết bị rời đi!");
+                let _ = led_event.lock().unwrap().set_low();
+            }
+            _ => {}
+        }
+    })?;
 
     // Tạo AP Wi-Fi
-    let sysloop = esp_idf_svc::eventloop::EspSystemEventLoop::take()?;
-    let mut wifi = EspWifi::new(peripherals.modem, sysloop, Default::default())?;
+   
+    let mut wifi = EspWifi::new(peripherals.modem, sysloop.clone(), Default::default())?;
     wifi.set_configuration(&Configuration::AccessPoint(AccessPointConfiguration {
         ssid: HString::<32>::try_from("ESP32_AP").unwrap(),
         password: HString::<64>::try_from("12345678").unwrap(),
+        auth_method: AuthMethod::WPA2Personal,
         channel: 1,
         ..Default::default()
     }))?;
