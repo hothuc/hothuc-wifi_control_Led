@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>ESP32 LED Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: Arial, sans-serif; text-align:center; padding:1rem; }
+    button { padding: 0.6rem 1.2rem; font-size:1rem; margin:0.5rem; }
+    #status { margin-top:1rem; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <h1>ESP32 LED Control</h1>
+  <div>
+    <button onclick="ledOn()">Turn ON</button>
+    <button onclick="ledOff()">Turn OFF</button>
+  </div>
+  <p id="status">LED status: {{STATUS}}</p>
+
+  <script>
+    async function ledOn() {
+      try {
+        const r = await fetch('/on', { method: 'GET' });
+        const t = await r.text();
+        document.getElementById('status').textContent = 'LED status: ' + t;
+      } catch(e) { console.error(e); }
+    }
+    async function ledOff() {
+      try {
+        const r = await fetch('/off', { method: 'GET' });
+        const t = await r.text();
+        document.getElementById('status').textContent = 'LED status: ' + t;
+      } catch(e) { console.error(e); }
+    }
+  </script>
+</body>
+</html>
