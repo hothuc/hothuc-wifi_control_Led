@@ -50,8 +50,14 @@ static/
 └── index.html
 ```
 
- Với nhiệm vụ các file là : Led.rs (cấu hình chân GPIO điều khiển led), web.rs(cấu hình và xử lý trên web), wifi.rs(cấu hình wifi và các sự kiện của wifi), main.rs(nơi chương trình chính chạy)
+ Với nhiệm vụ các file là :  
+  - led.rs (cấu hình chân GPIO điều khiển led),  
+  - web.rs(cấu hình và xử lý trên web),  
+  - wifi.rs(cấu hình wifi và các sự kiện của wifi),  
+  - main.rs(nơi chương trình chính chạy)
+
  Bạn cần chú ý thông tin để cài đặt tên và mật khẩu trong wifi.rs theo bảng dưới đây:
+
 |  Name  |           Value              |
 |:-------|:-----------------------------|
 |ssid    |SSID of your WiFi access point|
