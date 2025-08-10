@@ -39,7 +39,9 @@ Lưu ý: Khi thực hiện thì máy sẽ hỏi tên project bạn nhập tên m
 
 chú ý: các thư viện rất dễ xung đột nên bạn cần kiểm tra các thư viện cẩn thận.
 - Bước tiếp bạn thưc hiện tạo các file theo:
+
 <pre> ```plaintext src/ ├── led.rs ├── main.rs ├── web.rs └── wifi.rs static/ └── index.html ``` </pre>
+
  Với nhiệm vụ các file là : Led.rs (cấu hình chân GPIO điều khiển led), web.rs(cấu hình và xử lý trên web), wifi.rs(cấu hình wifi và các sự kiện của wifi), main.rs(nơi chương trình chính chạy)
  Bạn cần chú ý thông tin để cài đặt tên và mật khẩu trong wifi.rs theo bảng dưới đây:
 |  Name  |           Value              |
